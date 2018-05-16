@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<link rel="stylesheet" href="${s.base}/res/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="${s.base}/res/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+	<form class="layui-form" style="width:95%;">
+	
+		<input type="hidden" id="id" value="">
+		<div class="layui-row">
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">课程名</label>
+				<div class="layui-input-block">
+					<input id="name" value="" class="layui-input">
+				</div>
+			</div>
+		</div>
+		<div class="layui-row">
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">课程简介</label>
+				<div class="layui-input-block">
+					<textarea id="synopsis" style="height:150px" placeholder="请输入简介" class="layui-textarea"></textarea>
+				</div>
+			</div>
+		</div>
+		
+		<div class="layui-form-item layui-row layui-col-xs12">
+			<div class="layui-input-block">
+				<button class="layui-btn layui-btn-sm" lay-submit lay-filter="addBaseCourse">提交</button>
+				<button type="reset" id="reset"
+					class="layui-btn layui-btn-sm layui-btn-primary">重置</button>
+			</div>
+		</div>
+	</form>
+<script type="text/javascript" src="${s.base}/res/layui/layui.js"></script>
+<script type="text/javascript">
+layui.use(['form'],function(){
+	var form = layui.form,
+		layer = parent.layer === undefined ? layui.layer : top.layer,
+        $ = layui.jquery;
+	form.on("submit(addBaseCourse)",function(data){
+        var index = top.layer.msg('数据提交中，请稍候',{icon: 16,time:false,shade:0.8});
+    	var id = $("#id").val();
+    	$.ajax({
+    		type: 'post',
+    		url: '../basecourse/add.html',
+    		data: {
+				id : id,
+	            name : $("#name").val(),
+	            synopsis : $("#synopsis").val()
+			},
+			timeout:2000,
+    		success:function(msg) {
+				top.layer.close(index);
+				if (msg == true) {
+					top.layer.msg("操作成功！");
+				}else {
+					layer.msg(msg, {icon: 5,time:1000});
+				}
+			},
+    		error:function() {
+    			layer.msg("操作失败！", {icon: 5,time:1000});
+    			layer.close(index);
+    		}
+    	});
+        return false;
+    });
+});
+</script>
+</body>
+</html>

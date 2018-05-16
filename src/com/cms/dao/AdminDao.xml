@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cms.dao.AdminDao">
+	
+	<select id="getAllAdmin" resultType="Admin">
+		select * from t_admin where 1=1
+	</select>
+	
+	<!-- 查询所有admin -->
+	<select id="select" resultType="Admin">
+		select * from t_admin where username = #{username,jdbcType=VARCHAR} 
+		and password = #{password,jdbcType=VARCHAR}
+	</select>
+	
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.cms.entity.Admin">
+    update t_admin
+    <set>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null">
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+	
+</mapper>

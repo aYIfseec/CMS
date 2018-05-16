@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.dao.CourseDao">
+  <resultMap id="BaseResultMap" type="com.cms.entity.Course">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="start_date" jdbcType="DATE" property="startDate" />
+    <result column="end_date" jdbcType="DATE" property="endDate" />
+    <result column="class_hour" jdbcType="SMALLINT" property="classHour" />
+    <result column="test_mode" jdbcType="VARCHAR" property="testMode" />
+    <result column="student_num" jdbcType="INTEGER" property="studentNum" />
+    <result column="choice_num" jdbcType="INTEGER" property="choiceNum" />
+    <result column="courseName" jdbcType="VARCHAR" property="courseName" />
+    <result column="base_course_id" jdbcType="INTEGER" property="baseCourseId" />
+    <result column="t_id" jdbcType="INTEGER" property="tId" />
+    <result column="teacherName" jdbcType="VARCHAR" property="teacherName" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, start_date, end_date, class_hour, test_mode, student_num, choice_num, t_id, base_course_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_course
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getTotalItemsCountBySid" resultType="java.lang.Integer">
+    select count(*)
+    from t_course as C, t_teacher as T, t_base_course as B 
+    <where>
+    	C.base_course_id = B.id and C.t_id = T.id and start_date > CURRENT_DATE 
+    	<if test="param2 != null and param2 != '' ">
+    	and(
+	        (B.name like CONCAT ('%',#{param2},'%') )
+    		or (T.name like CONCAT ('%',#{param2},'%') )
+	     )
+    	</if>
+    	and C.complete = 0 
+    	and C.id
+    	<if test="param1 == 1 ">
+    		not
+    	</if>
+	   	in ( select c_id 
+	   	from t_score, t_student as S 
+	   	where S.id= #{param3} and S.id = t_score.s_id )
+    </where>
+  </select>
+  
+  <select id="getCourseListBySid" resultMap="BaseResultMap">
+    select 
+    C.id, start_date, end_date, class_hour, test_mode, student_num, 
+    choice_num, B.name as courseName, T.name as teacherName
+    
+    from t_course as C, t_teacher as T, t_base_course as B 
+    <where>
+    	C.base_course_id = B.id and C.t_id = T.id and start_date > CURRENT_DATE 
+    	<if test="param3 != null and param3 != '' ">
+    	and(
+	        (B.name like CONCAT ('%',#{param3},'%') )
+    		or (T.name like CONCAT ('%',#{param3},'%') )
+	     )
+    	</if>
+    	and C.complete = 0 
+    	and C.id
+    	<if test="param2 == 1 ">
+    		not
+    	</if>
+	   	in ( select c_id 
+	   	from t_score, t_student as S 
+	   	where S.id= #{param4} and S.id = t_score.s_id )
+    </where>
+    <if test="param1 != null">
+  		limit #{param1.start}, #{param1.pageSize}
+  	</if>
+  </select>
+  
+  <select id="getTotalItemsCountByTid" resultType="java.lang.Integer">
+    select count(*)
+    from t_course as B, t_base_course as A, t_teacher as C 
+    where B.base_course_id = A.id and B.t_id = C.id 
+    and B.complete = 0 
+    and  B.t_id = #{id}
+  </select>
+  <select id="getCourseListByTid" resultMap="BaseResultMap">
+    select 
+    B.id, start_date, end_date, class_hour, test_mode, student_num, choice_num, t_id, base_course_id 
+    , A.name as courseName, C.name as teacherName
+    from t_course as B, t_base_course as A, t_teacher as C
+    where B.base_course_id = A.id and B.t_id = C.id 
+    and B.complete = 0 
+    and  B.t_id = #{param2}
+    <if test="param1 != null">
+  		limit #{param1.start}, #{param1.pageSize}
+  	</if>
+  </select>
+  
+  <select id="getTotalItemsCount" resultType="java.lang.Integer">
+    select count(*)
+    from t_course as B, t_base_course as A, t_teacher as C
+    <where>
+    	B.base_course_id = A.id and B.t_id = C.id
+  		<if test="_parameter != null and _parameter != ''">
+  		and(
+	        (A.name like CONCAT ('%',#{searchKey},'%') )
+    		or (C.name like CONCAT ('%',#{searchKey},'%') )
+	     )
+  		</if>
+  	</where>
+  </select>
+  
+  <select id="getCourseList" resultMap="BaseResultMap">
+    select 
+    B.id, start_date, end_date, class_hour, test_mode, student_num, choice_num, t_id, base_course_id 
+    , A.name as courseName, C.name as teacherName
+    from t_course as B, t_base_course as A, t_teacher as C
+    <where>
+    	B.base_course_id = A.id and B.t_id = C.id
+  		<if test="param2 != null and param2 != ''">
+  		and(
+	        (A.name like CONCAT ('%',#{param2},'%') )
+    		or (C.name like CONCAT ('%',#{param2},'%') )
+	     )
+  		</if>
+  	</where>
+  	<if test="param1 != null">
+  		limit #{param1.start}, #{param1.pageSize}
+  	</if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_course
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteInList" >
+  	delete from t_course where id in
+  		<foreach collection="list" item="id" separator="," open="(" close=")">
+  			#{id}
+  		</foreach>
+  </delete>
+  
+  
+  <insert id="insert" parameterType="com.cms.entity.Course">
+    insert into t_course (id, start_date, end_date, 
+      class_hour, test_mode, t_id, 
+      base_course_id)
+    values (#{id,jdbcType=INTEGER}, #{startDate,jdbcType=DATE}, #{endDate,jdbcType=DATE}, 
+      #{classHour,jdbcType=SMALLINT}, #{testMode,jdbcType=VARCHAR}, #{tId,jdbcType=VARCHAR}, 
+      #{baseCourseId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cms.entity.Course">
+    insert into t_course
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="startDate != null">
+        start_date,
+      </if>
+      <if test="endDate != null">
+        end_date,
+      </if>
+      <if test="classHour != null">
+        class_hour,
+      </if>
+      <if test="testMode != null">
+        test_mode,
+      </if>
+      <if test="studentNum != null">
+        student_num,
+      </if>
+      <if test="choiceNum != null">
+        choice_num,
+      </if>
+      <if test="tId != null">
+        t_id,
+      </if>
+      <if test="baseCourseId != null">
+        base_course_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="startDate != null">
+        #{startDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null">
+        #{endDate,jdbcType=DATE},
+      </if>
+      <if test="classHour != null">
+        #{classHour,jdbcType=SMALLINT},
+      </if>
+      <if test="testMode != null">
+        #{testMode,jdbcType=VARCHAR},
+      </if>
+      <if test="studentNum != null">
+        #{studentNum,jdbcType=INTEGER},
+      </if>
+      <if test="choiceNum != null">
+        #{choiceNum,jdbcType=INTEGER},
+      </if>
+      <if test="tId != null">
+        #{tId,jdbcType=VARCHAR},
+      </if>
+      <if test="baseCourseId != null">
+        #{baseCourseId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cms.entity.Course">
+    update t_course
+    <set>
+      <if test="startDate != null">
+        start_date = #{startDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null">
+        end_date = #{endDate,jdbcType=DATE},
+      </if>
+      <if test="classHour != null">
+        class_hour = #{classHour,jdbcType=SMALLINT},
+      </if>
+      <if test="testMode != null">
+        test_mode = #{testMode,jdbcType=VARCHAR},
+      </if>
+      <if test="studentNum != null">
+        student_num = #{studentNum,jdbcType=INTEGER},
+      </if>
+      <if test="choiceNum != null">
+        choice_num = #{choiceNum,jdbcType=INTEGER},
+      </if>
+      <if test="complete != null">
+        complete = #{complete,jdbcType=INTEGER},
+      </if>
+      <if test="tId != null">
+        t_id = #{tId,jdbcType=VARCHAR},
+      </if>
+      <if test="baseCourseId != null">
+        base_course_id = #{baseCourseId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+</mapper>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.dao.AuthDao">
+  <resultMap id="BaseResultMap" type="com.cms.entity.Auth">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="admin_auth" jdbcType="TINYINT" property="adminAuth" />
+    <result column="teacher_auth" jdbcType="TINYINT" property="teacherAuth" />
+    <result column="student_auth" jdbcType="TINYINT" property="studentAuth" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, url, admin_auth, teacher_auth, student_auth
+  </sql>
+  
+  
+  <select id="getTotalItemsCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	select count(*) from t_auth
+  	<where>
+  		<if test="_parameter != null and _parameter != '' ">
+  			name like CONCAT('%', #{searchKey}, '%')
+  		</if>
+  	</where>
+  </select>
+  
+  <select id="getAuthList" resultMap="BaseResultMap">
+  	select * from t_auth
+  	<where>
+  		<if test="param2 != null and param2 != '' ">
+  			name like CONCAT('%', #{searchKey}, '%')
+  		</if>
+  	</where>
+  	<if test="param1 != null">
+  		limit #{param1.start}, #{param1.pageSize}
+  	</if>
+  </select>
+  
+  
+  <select id="selectUrl" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select url from t_auth where
+    <choose>
+    	<when test="_parameter == 'admin'">
+    		admin_auth = 1
+    	</when>
+    	<when test="_parameter == 'teacher'">
+    		teacher_auth = 1
+    	</when>
+    	<when test="_parameter == 'student'">
+    		student_auth = 1
+    	</when>
+    	<otherwise>
+    		1 = 0
+    	</otherwise>
+    </choose>
+  </select>
+  
+  <select id="selectMenu" resultMap="BaseResultMap">
+    select name, url from t_auth where name is not null and
+    <choose>
+    	<when test="_parameter == 'admin'">
+    		admin_auth = 1
+    	</when>
+    	<when test="_parameter == 'teacher'">
+    		teacher_auth = 1
+    	</when>
+    	<when test="_parameter == 'student'">
+    		student_auth = 1
+    	</when>
+    	<otherwise>
+    		1 = 0
+    	</otherwise>
+    </choose>
+  </select>
+  
+  
+  
+  
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_auth
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cms.entity.Auth">
+    insert into t_auth (id, name, url, 
+      admin_auth, teacher_auth, student_auth
+      )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
+      #{adminAuth,jdbcType=TINYINT}, #{teacherAuth,jdbcType=TINYINT}, #{studentAuth,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cms.entity.Auth">
+    insert into t_auth
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="adminAuth != null">
+        admin_auth,
+      </if>
+      <if test="teacherAuth != null">
+        teacher_auth,
+      </if>
+      <if test="studentAuth != null">
+        student_auth,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="adminAuth != null">
+        #{adminAuth,jdbcType=TINYINT},
+      </if>
+      <if test="teacherAuth != null">
+        #{teacherAuth,jdbcType=TINYINT},
+      </if>
+      <if test="studentAuth != null">
+        #{studentAuth,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cms.entity.Auth">
+    update t_auth
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="adminAuth != null">
+        admin_auth = #{adminAuth,jdbcType=TINYINT},
+      </if>
+      <if test="teacherAuth != null">
+        teacher_auth = #{teacherAuth,jdbcType=TINYINT},
+      </if>
+      <if test="studentAuth != null">
+        student_auth = #{studentAuth,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cms.entity.Auth">
+    update t_auth
+    set name = #{name,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      admin_auth = #{adminAuth,jdbcType=TINYINT},
+      teacher_auth = #{teacherAuth,jdbcType=TINYINT},
+      student_auth = #{studentAuth,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

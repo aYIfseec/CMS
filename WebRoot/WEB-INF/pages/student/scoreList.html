@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="${s.base}/res/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="${s.base}/res/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<!--startprint-->
+<form class="layui-form">
+	<blockquote class="layui-elem-quote quoteBox">
+		<form class="layui-form">
+			<div class="layui-inline">
+				<a id="all" class="search_btn layui-btn layui-btn-primary">全部</a>
+			</div>
+			<div class="layui-inline">
+				<a id="notpass" class="search_btn layui-btn layui-btn-primary">未通过课程</a>
+			</div>
+			<div class="layui-inline">
+				<a  id="pass" class="search_btn layui-btn layui-btn-primary">已通过课程</a>
+			</div>
+			<div class="layui-inline">
+				<a class="layui-btn layui-btn-primary" onclick="doPrint()">打印</a>
+			</div>
+		</form>
+	</blockquote>
+	
+	<table id="courseList" lay-filter="courseList" ></table>
+	
+</form>
+<!--endprint-->
+<script type="text/javascript" src="${s.base}/res/layui/layui.js"></script>
+<script type="text/javascript" src="${s.base}/res/js/print.js"></script>
+<script type="text/javascript">
+layui.use(['form','layer','table','laytpl','upload'],function(){
+    var form = layui.form,
+        layer = parent.layer === undefined ? layui.layer : top.layer,
+        $ = layui.jquery,
+        table = layui.table;
+     
+    //courseList列表
+    var tableIns = null;
+    loadCourse();
+    function loadCourse() {
+      tableIns = table.render({
+        elem: "#courseList",
+        url : "/CMS/score/stuScore.html",
+        request: {
+        	pageName: 'curr' //页码的参数名称
+        	,limitName: 'nums' //每页数据量的参数名
+        },
+        where: {
+            searchKey: $(".searchVal").val()  //搜索的关键字
+        },
+        cellMinWidth : 95,
+        page : true,
+        height : "full-125",
+        limits : [10,20,50,100],
+        limit : 10,
+        loading : true,
+        id : "courseListTable",
+        cols : [[
+        	{field: 'startDate', title: '时间',minWidth:160, align:'center'},
+            {field: 'courseName', title: '课程名',minWidth:160, align:'left'},
+            {field: 'teacherName', title: '任课教师',minWidth:120, align:'left'},
+            {field: 'testMode', title: '考核方式', minWidth:100, align:'center'},
+            {field: 'score', title: '成绩', minWidth:100, align:'center'},
+            {field: 'result', title: '结果', minWidth:100, align:'center'}
+        ]]
+      });
+    }
+    
+    //搜索
+    $(".search_btn").on("click",function(){
+    	var id = $(this).attr("id");
+    	var result;
+    	if (id == "all") {
+    		result = 2;
+    	} else if (id == "pass") {
+    		result = 1;
+    	} else {
+    		result = 0;
+    	}
+    	tableIns.reload({
+      		page: {curr: 1},
+      		where: { result: result }
+       	});
+    });
+});
+
+</script>
+</body>
+</html>

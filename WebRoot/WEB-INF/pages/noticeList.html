@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="${s.base}/res/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="${s.base}/res/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<form class="layui-form">
+	<blockquote class="layui-elem-quote quoteBox">
+		<form class="layui-form">
+			<div class="layui-inline">
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input searchVal" placeholder="请输入搜索的内容" />
+				</div>
+				<a class="layui-btn search_btn" data-type="reload">搜索</a>
+			</div>
+			<#if user.userType == 'admin'>
+			<div class="layui-inline" style="margin-left:30px">
+				<a class="layui-btn layui-btn-normal addNotice_btn">写公告</a>
+			</div>
+			<div class="layui-inline">
+				<a class="layui-btn layui-btn-danger layui-btn-normal delAll_btn">批量删除</a>
+			</div>
+			</#if>
+		</form>
+	</blockquote>
+	<table id="noticeList" lay-filter="noticeList"></table>
+	<!--审核状态-->
+	<script type="text/html" id="noticeStatus">
+		{{#  if(d.auth == "3"){ }}
+		<span class="layui-red">草稿</span>
+		{{#  } else if(d.auth == "2"){ }}
+		<span class="layui-blue">教师可见</span>
+		{{#  } else { }}
+			全体可见
+		{{#  }}}
+	</script>
+
+	<!--操作-->
+	<script type="text/html" id="noticeListBar">
+		<#if user.userType == 'admin'>
+		<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+		<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+		</#if>
+		<a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="look">查看</a>
+	</script>
+</form>
+<script type="text/javascript" src="${s.base}/res/layui/layui.js"></script>
+<script type="text/javascript" src="${s.base}/res/js/noticeList.js"></script>
+</body>
+</html>

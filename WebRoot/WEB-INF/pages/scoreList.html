@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="${s.base}/res/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="${s.base}/res/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<form class="layui-form">
+	<blockquote class="layui-elem-quote quoteBox">
+		<form class="layui-form">
+			<div class="layui-inline">
+				<label class="layui-label">时间区间</label>
+				<div class="layui-input-inline" style="width:100px">
+					<input type="text" value="" placeholder="请选择"
+						id="startDate" class="layui-input" >
+				</div>
+				-
+				<div class="layui-input-inline" style="width:100px">
+					<input type="text" value="" placeholder="请选择"
+						id="endDate" class="layui-input" >
+				</div>
+			</div>
+			<div class="layui-inline" style="margin-left:30px">
+				<label class="layui-label">结果</label>
+				<div class="layui-input-inline" style="width:90px">
+					<select id="isPass" class="layui-input-inline">
+						<option value="0">全部</option>
+						<option value="1">通过</option>
+						<option value="2">未通过</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-inline" style="margin-left:30px">
+				<div class="layui-input-inline">
+					<input id="searchKey" type="text" class="layui-input" placeholder="请输入搜索的内容" />
+				</div>
+				<a class="layui-btn" id="search_btn" data-type="reload">搜索</a>
+			</div>
+			<div class="layui-inline" style="margin-left:30px">
+				<a class="layui-btn layui-btn-primary" id="export">导出到Excel</a>
+			</div>
+		</form>
+	</blockquote>
+	
+	<table id="courseList" lay-filter="courseList" ></table>
+	
+</form>
+<script type="text/javascript" src="${s.base}/res/layui/layui.js"></script>
+<script type="text/javascript">
+
+layui.use(['form','layer','table','laytpl','laydate'],function(){
+    var form = layui.form,
+    	laydate = layui.laydate,
+        layer = parent.layer === undefined ? layui.layer : top.layer,
+        $ = layui.jquery,
+        table = layui.table;
+     
+    laydate.render({ elem: '#startDate' });
+    laydate.render({ elem: '#endDate' });
+     
+    //courseList列表
+    var tableIns = null;
+    loadCourse();
+    function loadCourse() {
+      tableIns = table.render({
+        elem: "#courseList",
+        url : "/CMS/score/list.html",
+        request: {
+        	pageName: 'curr' //页码的参数名称
+        	,limitName: 'nums' //每页数据量的参数名
+        },
+        where: {
+            isPass : $("#isPass").val(),
+		    searchKey : $("#searchKey").val(),
+		    startDate : $("#startDate").val(),
+		    endDate : $("#endDate").val()
+        },
+        cellMinWidth : 95,
+        page : true,
+        height : "full-125",
+        limits : [10,20,50,100],
+        limit : 10,
+        loading : true,
+        id : "courseListTable",
+        cols : [[
+        	{field: 'startDate', title: '时间',minWidth:160},
+            {field: 'stuId', title: '学号',minWidth:150},
+            {field: 'stuName', title: '姓名',minWidth:120},
+            {field: 'major', title: '专业',minWidth:120},
+            {field: 'grade', title: '班级',minWidth:120},
+            {field: 'courseName', title: '课程名',minWidth:160},
+            {field: 'teacherName', title: '任课教师',minWidth:120},
+            {field: 'testMode', title: '考核方式', minWidth:100},
+            {field: 'score', title: '成绩', minWidth:100},
+            {field: 'result', title: '结果', minWidth:100}
+        ]]
+      });
+    }
+    
+    //搜索
+    $("#search_btn").on("click",function(){
+    	console.log($("#isPass").val());
+    	tableIns.reload({
+      		page: {curr: 1},
+      		where: {
+	            isPass : $("#isPass").val(),
+			    searchKey : $("#searchKey").val(),
+			    startDate : $("#startDate").val(),
+			    endDate : $("#endDate").val()
+	        },
+       	});
+    });
+    
+    $("#export").on("click", function() {
+    	window.location.href="/CMS/score/export.html"
+    		+ "?isPass=" + $("#isPass").val()
+    		+ "&searchKey=" + $("#searchKey").val() 
+    		+ "&startDate=" + $("#startDate").val() 
+    		+ "&endDate=" + $("#endDate").val();
+    });
+});
+
+</script>
+</body>
+</html>

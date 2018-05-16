@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>公告</title>
+	<link rel="stylesheet" href="${s.base}/res/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="${s.base}/res/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<form class="layui-form">
+	<input type="hidden" id="opType" value="">
+	<input type="hidden" id="id" value="">
+	<div class="layui-row">
+		<div class="layui-inline">
+			<label class="layui-form-label">公开度</label>
+			<div class="layui-input-block">
+				<select id="status" name="status" lay-verify="required">
+					<option value="3">保存草稿</option>
+					<option value="2">教师可见</option>
+					<option value="1">全体可见</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="layui-inline">
+			<a class="layui-btn layui-btn-sm" lay-filter="addNotice" lay-submit><i
+				class="layui-icon">&#xe609;</i>上传</a>
+		</div>
+	</div><br/>
+	<div class="layui-row">
+		<div class="layui-inline" style="width:29%">
+			<label class="layui-form-label">公告标题</label>
+			<div class="layui-input-block">
+				<input id="title" type="text" class="layui-input" lay-verify="title" placeholder="请输入公告标题">
+			</div>
+		</div>
+		
+		<div class="layui-inline" style="width:20%;">
+			<label class="layui-form-label">发布人</label>
+			<div class="layui-input-block">
+				<input id="author" type="text" class="layui-input" lay-verify="author" placeholder="发布人">
+			</div>
+		</div>
+	</div>
+	<br/>
+	<div class="layui-form-item layui-col-xs9 ">
+		<label class="layui-form-label">公告内容</label>
+		<div class="layui-input-block">
+			<textarea class="layui-textarea layui-hide" name="content" lay-verify="content" id="notice_content"></textarea>
+		</div>
+	</div>
+</form>
+<script type="text/javascript" src="${s.base}/res/layui/layui.js"></script>
+<script type="text/javascript" src="${s.base}/res/js/noticeAdd.js"></script>
+</body>
+</html>

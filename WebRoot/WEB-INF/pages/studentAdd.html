@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="${s.base}/res/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="${s.base}/res/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+	<form class="layui-form" style="width:80%;">
+		<div class="layui-row">
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">学号</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input id" lay-verify="required"
+						placeholder="请输入学号">
+					<input type="hidden" id="opType" value="">
+				</div>
+			</div>
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">姓名</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input name" lay-verify="required"
+						placeholder="请输入姓名">
+				</div>
+			</div>
+		</div>
+		<div class="layui-row">
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">密码</label>
+				<div class="layui-input-block">
+					<input id="password" type="password" value="" placeholder="请设置密码"
+						lay-verify="required" class="layui-input pwd">
+				</div>
+			</div>
+
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">确认密码</label>
+				<div class="layui-input-block">
+					<input type="password" value="" placeholder="请确认密码"
+						id="re_password" lay-verify="required|confirmPwd" class="layui-input pwd">
+				</div>
+			</div>
+		</div>
+		<div class="layui-row">
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">性别</label>
+				<div class="layui-input-block sex">
+					<input type="radio" name="sex" value="男" title="男" checked>
+					<input type="radio" name="sex" value="女" title="女">
+				</div>
+			</div>
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">入学时间</label>
+				<div class="layui-input-block">
+					<input type="text" value="2018-09-02" placeholder="请选择入学时间" readonly
+						id="admissionDate" class="layui-input" lay-verify="required">
+				</div>
+			</div>
+		</div>
+
+		<div class="layui-row">
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">专业</label>
+				<div class="layui-input-block">
+					<input type="text" id="major" class="layui-input major" lay-verify="required"
+						placeholder="请输入专业">
+				</div>
+			</div>
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">班级</label>
+				<div class="layui-input-block">
+					<input type="text" id="grade" class="layui-input grade" lay-verify="required"
+						placeholder="请输入班级">
+				</div>
+			</div>
+		</div>
+		<div class="magb15 layui-col-md4 layui-col-xs12">
+			<label class="layui-form-label">学历层次</label>
+			<div class="layui-input-block">
+				<select name="education" class="education" lay-filter="education">
+					<option value="本科">本科</option>
+					<option value="专科">专科</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="layui-form-item layui-row layui-col-xs12">
+			<div class="layui-input-block">
+				<button class="layui-btn layui-btn-sm" lay-submit
+					lay-filter="addStudent">提交</button>
+				<button type="reset" id="reset"
+					class="layui-btn layui-btn-sm layui-btn-primary">重置</button>
+			</div>
+		</div>
+	</form>
+<script type="text/javascript" src="${s.base}/res/layui/layui.js"></script>
+<script type="text/javascript" src="${s.base}/res/js/studentAdd.js"></script>
+<script type="text/javascript" src="${s.base}/res/js/md5.js"></script>
+</body>
+</html>

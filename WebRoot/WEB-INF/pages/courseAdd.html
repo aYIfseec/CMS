@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<link rel="stylesheet" href="${s.base}/res/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="${s.base}/res/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+	<form class="layui-form" style="width:80%;">
+	
+		<input type="hidden" id="id" value="">
+		<div class="layui-row">
+			<div id="baseCourseDiv" class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">课程</label>
+				<div class="layui-input-block">
+					<select id="baseCourseSelect" lay-search>
+					</select>
+				</div>
+			</div>
+			<div id="teacherDiv" class="magb15 layui-col-md4 layui-col-xs12" lay-filter="teacherSelect">
+				<label class="layui-form-label">任课教师</label>
+				<div class="layui-input-block">
+					<select id="teacherSelect" lay-search>
+					</select>
+				</div>
+			</div>
+		</div>
+		
+		<div class="layui-row">
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">开始时间</label>
+				<div class="layui-input-block">
+					<input type="text" value="" placeholder="请选择开始时间"
+						id="startDate" class="layui-input" >
+				</div>
+			</div>
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">结束时间</label>
+				<div class="layui-input-block">
+					<input type="text" value="" placeholder="请选择结束时间"
+						id="endDate" class="layui-input" >
+				</div>
+			</div>
+		</div>
+		
+		<div class="layui-row">
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">课时</label>
+				<div class="layui-input-block">
+					<input type="text" value="" placeholder="请输入课时"
+						id="classHour" class="layui-input" >
+				</div>
+			</div>
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">考核方式</label>
+				<div class="layui-input-block">
+					<input type="text" value="" placeholder="请输入考核方式"
+						id="testMode" class="layui-input" >
+				</div>
+			</div>
+		</div>
+		
+		<div class="layui-row">
+			<div class="magb15 layui-col-md4 layui-col-xs12">
+				<label class="layui-form-label">人数</label>
+				<div class="layui-input-block">
+					<input type="text" value="" placeholder="请输入人数"
+						id="studentNum" class="layui-input" >
+				</div>
+			</div>
+		</div>
+		
+		<div class="layui-form-item layui-row layui-col-xs12">
+			<div class="layui-input-block">
+				<button class="layui-btn layui-btn-sm" lay-submit lay-filter="addCourse">提交</button>
+				<button type="reset" id="reset"
+					class="layui-btn layui-btn-sm layui-btn-primary">重置</button>
+			</div>
+		</div>
+	</form>
+<script type="text/javascript" src="${s.base}/res/layui/layui.js"></script>
+<script type="text/javascript" src="${s.base}/res/js/courseAdd.js"></script>
+</body>
+</html>

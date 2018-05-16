@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.dao.ScoreDao">
+  <resultMap id="BaseResultMapScore" type="com.cms.entity.Score">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="result" jdbcType="VARCHAR" property="result" />
+    <result column="c_id" jdbcType="INTEGER" property="cId" />
+    <result column="s_id" jdbcType="VARCHAR" property="sId" />
+  </resultMap>
+  
+  <resultMap id="BaseResultMap" type="com.cms.entity.Course">
+    <result column="start_date" jdbcType="DATE" property="startDate" />
+    <result column="courseName" jdbcType="VARCHAR" property="courseName" />
+    <result column="teacherName" jdbcType="VARCHAR" property="teacherName" />
+    <result column="test_mode" jdbcType="VARCHAR" property="testMode" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="result" jdbcType="VARCHAR" property="result" />
+  </resultMap>
+  
+  
+  <resultMap id="ResultMap" type="com.cms.dto.ScoreVo">
+    <result column="start_date" jdbcType="DATE" property="startDate" />
+    <result column="stuId" jdbcType="VARCHAR" property="stuId" />
+    <result column="stuName" jdbcType="VARCHAR" property="stuName" />
+    <result column="major" jdbcType="VARCHAR" property="major" />
+    <result column="grade" jdbcType="VARCHAR" property="grade" />
+    <result column="courseName" jdbcType="VARCHAR" property="courseName" />
+    <result column="teacherName" jdbcType="VARCHAR" property="teacherName" />
+    <result column="test_mode" jdbcType="VARCHAR" property="testMode" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="result" jdbcType="VARCHAR" property="result" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, score, result, c_id, s_id
+  </sql>
+  
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMapScore">
+    select 
+    <include refid="Base_Column_List" />
+    from t_score
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 成绩报表 start-->
+  <select id="getTotalItemsCountForExport" parameterType="com.cms.dto.ScoreVo"  resultType="java.lang.Integer">
+    select count(*) 
+    from t_score as Sc, t_course as C, t_student as Stu, t_base_course as Bc, t_teacher as T
+    where Sc.c_id = C.id and Sc.s_id = Stu.id and C.base_course_id = Bc.id and C.t_id = T.id
+    	and C.complete = 1
+   	<if test="startDate != null and startDate != '' ">
+    	and C.start_date >= #{startDate}
+    </if>
+    <if test="endDate != null and endDate != '' ">
+    	and C.start_date &lt;= #{endDate}
+    </if>
+   	<if test="isPass == 1">
+    	and (score >= 60 or result = '通过')
+    </if>
+    <if test="isPass == 2">
+    	and (60 > score or result = '未通过')
+    </if>
+    <if test="searchKey != null and searchKey != '' ">
+    	and (
+			Stu.major like CONCAT('%', #{searchKey}, '%')
+			or Stu.grade like CONCAT('%', #{searchKey}, '%')
+			
+			or Bc.name like CONCAT('%', #{searchKey}, '%')
+		)
+    </if>
+  </select>
+  
+  <select id="getScoreListForExport"  resultMap="ResultMap">
+    select start_date, Stu.id as stuId, Stu.name as stuName, major, grade, 
+    	Bc.name as courseName, T.name as teacherName, test_mode, score, result
+    from t_score as Sc, t_course as C, t_student as Stu, t_base_course as Bc, t_teacher as T
+    where Sc.c_id = C.id and Sc.s_id = Stu.id and C.base_course_id = Bc.id 
+    	and C.t_id = T.id and C.complete = 1
+    <if test="param2 != null">
+    	<if test="param2.startDate != null and param2.startDate != '' ">
+	    	and C.start_date >= #{param2.startDate}
+	    </if>
+	    <if test="param2.endDate != null and param2.endDate != '' ">
+	    	and C.start_date &lt;= #{param2.endDate}
+	    </if>
+    	<if test="param2.isPass == 1">
+	    	and (score >= 60 or result = '通过')
+	    </if>
+	    <if test="param2.isPass == 2">
+	    	and (60 > score or result = '未通过')
+	    </if>
+	    <if test="param2.searchKey != null and param2.searchKey != '' ">
+	    	and (
+				Stu.major like CONCAT('%', #{param2.searchKey}, '%')
+				or Stu.grade like CONCAT('%', #{param2.searchKey}, '%')
+				
+				or Bc.name like CONCAT('%', #{param2.searchKey}, '%')
+			)
+	    </if>
+    </if>
+    <if test="param1 != null">
+  		limit #{param1.start}, #{param1.pageSize}
+  	</if>
+  </select>
+  <!-- 成绩报表end -->
+  
+  <select id="getTotalItemsCount"  resultType="java.lang.Integer">
+    select count(*) from t_score, t_course as C
+    where t_score.c_id = C.id
+    	and C.complete = 1
+    	and s_id = #{param1,jdbcType=VARCHAR}
+    <if test="param2 == 1">
+    	and (score >= 60 or result = '通过')
+    </if>
+    <if test="param2 == 0">
+    	and (60 > score or result = '未通过')
+    </if>
+  </select>
+  
+  <select id="getCourseList"  resultMap="BaseResultMap">
+    select start_date, BC.name as courseName, 
+    	T.name as teacherName, test_mode, 
+    	score, result
+    from t_score as S, t_course as C, 
+    	t_teacher as T, t_base_course as BC
+    where S.c_id = C.id and C.base_course_id = BC.id 
+    	and C.t_id = T.id and C.complete = 1
+    	and S.s_id = #{param2,jdbcType=VARCHAR}
+    <if test="param3 == 1">
+    	and (score >= 60 or result = '通过')
+    </if>
+    <if test="param3 == 0">
+    	and (60 > score or result = '未通过')
+    </if>
+    <if test="param1 != null">
+  		limit #{param1.start}, #{param1.pageSize}
+  	</if>
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_score
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <delete id="delete" parameterType="com.cms.entity.Score">
+    delete from t_score
+    where c_id = #{cId,jdbcType=INTEGER} and s_id = #{sId,jdbcType=VARCHAR} 
+  </delete>
+  
+  <insert id="insert" parameterType="com.cms.entity.Score">
+    insert into t_score (id, score, result, 
+      c_id, s_id)
+    values (#{id,jdbcType=INTEGER}, #{score,jdbcType=INTEGER}, #{result,jdbcType=VARCHAR}, 
+      #{cId,jdbcType=INTEGER}, #{sId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cms.entity.Score">
+    insert into t_score
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="result != null">
+        result,
+      </if>
+      <if test="cId != null">
+        c_id,
+      </if>
+      <if test="sId != null">
+        s_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="result != null">
+        #{result,jdbcType=VARCHAR},
+      </if>
+      <if test="cId != null">
+        #{cId,jdbcType=INTEGER},
+      </if>
+      <if test="sId != null">
+        #{sId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cms.entity.Score">
+    update t_score
+    <set>
+      <if test="score != null">
+        score = #{score,jdbcType=INTEGER},
+      </if>
+      <if test="result != null">
+        result = #{result,jdbcType=VARCHAR},
+      </if>
+      <if test="cId != null">
+        c_id = #{cId,jdbcType=INTEGER},
+      </if>
+      <if test="sId != null">
+        s_id = #{sId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cms.entity.Score">
+    update t_score
+    set score = #{score,jdbcType=INTEGER},
+      result = #{result,jdbcType=VARCHAR},
+      c_id = #{cId,jdbcType=INTEGER},
+      s_id = #{sId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="update" parameterType="java.util.List">
+    update t_score
+    <trim prefix="set" suffixOverrides=",">
+    	<trim prefix="score = case" suffix="end ,">
+    		<foreach collection="list" item="score">
+    			when id = #{score.id} then #{score.score}
+    		</foreach>
+        </trim>
+        <trim prefix="result = case" suffix="end ,">
+    		<foreach collection="list" item="score">
+    			when id = #{score.id} then #{score.result}
+    		</foreach>
+        </trim>
+    </trim>
+    where id in 
+    <foreach collection="list" item="score" separator="," open="(" close=")" >
+    	#{score.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+</mapper>

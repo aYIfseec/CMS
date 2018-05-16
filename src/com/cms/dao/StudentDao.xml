@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.dao.StudentDao">
+  <resultMap id="BaseResultMapStudent" type="com.cms.entity.Student">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="admission_date" jdbcType="DATE" property="admissionDate" />
+    <result column="major" jdbcType="VARCHAR" property="major" />
+    <result column="grade" jdbcType="VARCHAR" property="grade" />
+    <result column="education" jdbcType="VARCHAR" property="education" />
+  </resultMap>
+  
+  <resultMap id="BaseResultMap" type="com.cms.entity.Student">
+    <id column="sId" jdbcType="VARCHAR" property="id" />
+    <result column="sName" jdbcType="VARCHAR" property="name" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="grade" jdbcType="VARCHAR" property="grade" />
+    	<result column="id" property="id" />
+    	<result column="score" property="score" />
+    	<result column="result" property="result" />
+  		<result column="cName" property="courseName" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, password, name, sex, admission_date, major, grade, education
+  </sql>
+  
+  <select id="select" resultType="Student">
+  	select <include refid="Base_Column_List" />
+  	from t_student where  id = #{id,jdbcType=VARCHAR}
+  	and password = #{password,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getTotalItemsCountByTid" resultType="Integer">
+  	select count(*)
+    from t_student as A, t_score as B, t_course as C, t_base_course as BC
+    <where>
+    	A.id = B.s_id and C.id = B.c_id and C.base_course_id = BC.id
+    	and C.complete = 0 
+    	and C.t_id = #{param1}
+    	<if test="param2 != null and param2 != ''">
+  			and C.id = #{param2}
+    	</if>
+    </where>
+  </select>
+  
+  <select id="getStudentListByTid" resultMap="BaseResultMap">
+  	select B.id as id, A.id as sId, A.name as sName, sex, grade, 
+  	score, result, C.id as cId, BC.name as cName
+    from t_student as A , t_score as B , t_course as C , t_base_course as BC
+    <where>
+    	A.id = B.s_id and C.id = B.c_id and C.base_course_id = BC.id
+    	and C.complete = 0 
+    	and C.t_id = #{param2}
+    	<if test="param3 != null and param3 != '' ">
+  			and C.id = #{param3}
+    	</if>
+    </where>
+    <if test="param1 != null">
+  		limit #{param1.start}, #{param1.pageSize}
+  	</if>
+  </select>
+  
+  <select id="getTotalItemsCount" resultType="Integer">
+  	select count(*)
+    from t_student
+    <where>
+    	<if test="_parameter != null and _parameter != ''">
+  			(id like CONCAT ('%',#{searchKey},'%') )
+    		or (name like CONCAT ('%',#{searchKey},'%') )
+	        or (sex like CONCAT ('%',#{searchKey},'%') )
+	        or (major like CONCAT ('%',#{searchKey},'%') )
+	        or (grade like CONCAT ('%',#{searchKey},'%') )
+	        or (education like CONCAT ('%',#{searchKey},'%') )
+    	</if>
+    </where>
+  </select>
+  
+  <select id="selectBySearchKey" resultMap="BaseResultMapStudent">
+  	select
+  	<include refid="Base_Column_List" />
+  	from t_student
+  	<where>
+  		<if test="param2 != null and param2 != ''">
+	        (id like CONCAT ('%',#{param2},'%') )
+    		or (name like CONCAT ('%',#{param2},'%') )
+	        or (sex like CONCAT ('%',#{param2},'%') )
+	        or (major like CONCAT ('%',#{param2},'%') )
+	        or (grade like CONCAT ('%',#{param2},'%') )
+	        or (education like CONCAT ('%',#{param2},'%') )
+  		</if>
+  	</where>
+  	<if test="param1 != null">
+  		limit #{param1.start}, #{param1.pageSize}
+  	</if>
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMapStudent">
+    select 
+    <include refid="Base_Column_List" />
+    from t_student
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_student
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  
+  <delete id="deleteInList" >
+  	delete from t_student where id in
+  		<foreach collection="list" item="id" separator="," open="(" close=")">
+  			#{id}
+  		</foreach>
+  </delete>
+  
+  <insert id="insert" parameterType="com.cms.entity.Student">
+    insert into t_student (id, password, name, 
+      sex, admission_date, major, 
+      grade, education)
+    values (#{id,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{sex,jdbcType=VARCHAR}, #{admissionDate,jdbcType=DATE}, #{major,jdbcType=VARCHAR}, 
+      #{grade,jdbcType=VARCHAR}, #{education,jdbcType=VARCHAR})
+  </insert>
+  	  
+  <insert id="insertBatch" parameterType="java.util.List">
+  	insert into t_student (id, password, name, 
+      sex, admission_date, major, 
+      grade, education) values 
+      <foreach collection="list" item="item" separator="," >
+  		(#{item.id}, #{item.password}, #{item.name},
+      	#{item.sex}, #{item.admissionDate},#{item.major},
+      	#{item.grade}, #{item.education})
+  	  </foreach>
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.cms.entity.Student">
+    insert into t_student
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="admissionDate != null">
+        admission_date,
+      </if>
+      <if test="major != null">
+        major,
+      </if>
+      <if test="grade != null">
+        grade,
+      </if>
+      <if test="education != null">
+        education,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="admissionDate != null">
+        #{admissionDate,jdbcType=DATE},
+      </if>
+      <if test="major != null">
+        #{major,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null">
+        #{grade,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null">
+        #{education,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cms.entity.Student">
+    update t_student
+    <set>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="admissionDate != null">
+        admission_date = #{admissionDate,jdbcType=DATE},
+      </if>
+      <if test="major != null">
+        major = #{major,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null">
+        grade = #{grade,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null">
+        education = #{education,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cms.entity.Student">
+    update t_student
+    set password = #{password,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=VARCHAR},
+      admission_date = #{admissionDate,jdbcType=DATE},
+      major = #{major,jdbcType=VARCHAR},
+      grade = #{grade,jdbcType=VARCHAR},
+      education = #{education,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

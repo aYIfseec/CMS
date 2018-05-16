@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>学生成绩管理系统</title>
+	<link rel="stylesheet" href="${s.base}/res/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="${s.base}/res/css/index.css" media="all" />
+</head>
+<body class="main_body">
+	<div class="layui-layout layui-layout-admin">
+		<!-- 顶部 -->
+		<div class="layui-header header">
+			<div class="layui-main mag0">
+				<a href="#" class="logo">成绩管理系统</a>
+				<!-- 顶级菜单 -->
+				<ul class="layui-nav mobileTopLevelMenus" mobile>
+					<li class="layui-nav-item">
+						<a href="javascript:;"><i class="seraph icon-caidan"></i><cite>菜单</cite></a>
+						<dl class="layui-nav-child">
+						<#if user.userType == 'admin'>
+							<dd class="clickdd" id="dd1"><a href="javascript:;"><i class="seraph icon-icon10" data-icon="icon-icon10"></i><cite>学生信息</cite></a></dd>
+							<dd class="clickdd" id="dd2"><a href="javascript:;"><i class="layui-icon" data-icon="&#xe63c;">&#xe63c;</i><cite>教师信息</cite></a></dd>
+							<dd class="clickdd" id="dd3"><a href="javascript:;"><i class="layui-icon" data-icon="&#xe705;">&#xe705;</i><cite>课程信息</cite></a></dd>
+							<dd class="clickdd" id="dd5"><a href="javascript:;"><i class="layui-icon" data-icon="&#xe62d;">&#xe62d;</i><cite>成绩报表</cite></a></dd>
+							<dd class="clickdd" id="dd4"><a href="javascript:;"><i class="layui-icon" data-icon="&#xe620;">&#xe620;</i><cite>系统设置</cite></a></dd>
+						<#elseif user.userType == 'teacher'>
+							<dd class="clickdd" id="dd1"><a href="javascript:;"><i class="seraph icon-icon10" data-icon="icon-icon10"></i><cite>学生信息</cite></a></dd>
+							<dd class="clickdd" id="dd2"><a href="javascript:;"><i class="layui-icon" data-icon="&#xe705;">&#xe705;</i><cite>我的课程</cite></a></dd>
+						<#else>
+							<dd class="clickdd" id="dd1"><a href="javascript:;"><i class="layui-icon" data-icon="&#xe705;">&#xe705;</i><cite>课程</cite></a></dd>
+							<dd class="clickdd" id="dd2"><a href="javascript:;"><i class="layui-icon" data-icon="&#xe63c;">&#xe63c;</i><cite>成绩</cite></a></dd>
+						</#if>
+						</dl>
+					</li>
+				</ul>
+				<ul class="layui-nav topLevelMenus" pc>
+				<#if user.userType == 'admin'>
+					<li class="layui-nav-item"  pc>
+						<a href="javascript:;" id="pcdd1" data-url="/CMS/main/student.html"><i class="seraph icon-icon10" data-icon="icon-icon10"></i><cite>学生信息</cite></a>
+					</li>
+					<li class="layui-nav-item"  pc>
+						<a href="javascript:;" id="pcdd2" data-url="/CMS/main/teacher.html"><i class="layui-icon" data-icon="&#xe63c;">&#xe63c;</i><cite>教师信息</cite></a>
+					</li>
+					<li class="layui-nav-item"  pc>
+						<a href="javascript:;" id="pcdd3" data-url="/CMS/main/course.html"><i class="layui-icon" data-icon="&#xe705;">&#xe705;</i><cite>课程信息</cite></a>
+					</li>
+					<li class="layui-nav-item" pc>
+						<a href="javascript:;" id="pcdd5" data-url="/CMS/main/score.html"><i class="layui-icon" data-icon="&#xe62d;">&#xe62d;</i><cite>成绩报表</cite></a>
+					</li>
+					<li class="layui-nav-item" pc>
+						<a href="javascript:;" id="pcdd4" data-url="/CMS/main/system.html"><i class="layui-icon" data-icon="&#xe620;">&#xe620;</i><cite>系统设置</cite></a>
+					</li>
+				<#elseif user.userType == 'teacher'>
+					<li class="layui-nav-item"  pc>
+						<a href="javascript:;" id="pcdd1" data-url="/CMS/main/score.html"><i class="seraph icon-icon10" data-icon="icon-icon10"></i><cite>学生列表</cite></a>
+					</li>
+					<li class="layui-nav-item"  pc>
+						<a href="javascript:;" id="pcdd2" data-url="/CMS/main/course.html"><i class="layui-icon" data-icon="&#xe705;">&#xe705;</i><cite>我的课程</cite></a>
+					</li>
+				<#else>
+					<li class="layui-nav-item"  pc>
+						<a href="javascript:;" id="pcdd1" data-url="/CMS/main/course.html"><i class="layui-icon" data-icon="&#xe705;">&#xe705;</i><cite>课程</cite></a>
+					</li>
+					<li class="layui-nav-item"  pc>
+						<a href="javascript:;" id="pcdd2" data-url="/CMS/main/score.html"><i class="layui-icon" data-icon="&#xe63c;">&#xe63c;</i><cite>成绩</cite></a>
+					</li>
+				</#if>
+				</ul>
+			    <!-- 顶部右侧菜单 -->
+			    <ul class="layui-nav top_menu">
+					<li class="layui-nav-item" id="userInfo">
+						<a href="javascript:;"><img src="/CMS/res/images/userface4.jpg" class="layui-nav-img userAvatar" width="35" height="35">
+							<cite class="username">
+							<#if user.userType == 'admin'>
+								${user.nickname}
+							<#else>
+								${user.name}
+							</#if>
+							</cite></a>
+						<dl class="layui-nav-child">
+							<dd><a href="javascript:;" data-url="/CMS/pswd/page.html"><i class="seraph icon-xiugai" data-icon="icon-xiugai"></i><cite>修改密码</cite></a></dd>
+							<dd><a href="/CMS/login/out.html" class="signOut"><i class="seraph icon-tuichu"></i><cite>退出</cite></a></dd>
+						</dl>
+					</li>
+				</ul>
+			</div>
+		</div>
+		
+		<!-- tab页面标题栏 lay-filter=bodyTab -->
+		<div class="layui-body layui-form">
+			<div class="layui-tab mag0" lay-filter="bodyTab" id="top_tabs_box">
+				<ul class="layui-tab-title top_tab" id="top_tabs">
+					<li class="layui-this" lay-id=""><i class="layui-icon">&#xe68e;</i> <cite>首页</cite></li>
+				</ul>
+				<ul class="layui-nav closeBox">
+				  <li class="layui-nav-item">
+				    <a href="javascript:;"><i class="layui-icon caozuo">&#xe643;</i> 页面操作</a>
+				    <dl class="layui-nav-child">
+					  <dd><a href="javascript:;" class="refresh refreshThis"><i class="layui-icon">&#x1002;</i> 刷新当前</a></dd>
+				      <dd><a href="javascript:;" class="closePageOther"><i class="seraph icon-prohibit"></i> 关闭其他</a></dd>
+				      <dd><a href="javascript:;" class="closePageAll"><i class="seraph icon-guanbi"></i> 关闭全部</a></dd>
+				    </dl>
+				  </li>
+				</ul>
+				<div class="layui-tab-content clildFrame">
+					<div class="layui-tab-item layui-show">
+						<iframe src="/CMS/main/notice.html"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 底部 -->
+		<div class="layui-footer footer">
+			<p><span>copyright@2018 </span></p>
+		</div>
+	</div>
+	
+	<script type="text/javascript" src="${s.base}/res/layui/layui.js"></script>
+	<script type="text/javascript" src="${s.base}/res/js/index.js"></script>
+</body>
+</html>

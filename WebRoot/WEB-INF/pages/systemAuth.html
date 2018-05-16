@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="${s.base}/res/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="${s.base}/res/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<form class="layui-form">
+	
+	
+	<table id="authList" lay-filter="authList"></table>
+	<!--审核状态-->
+	<script type="text/html" id="teacherAuth">
+		{{#  if(d.teacherAuth == "1"){ }}
+		<input data-id="{{ d.id }}" type="checkbox" value="0" name="teacherAuth" lay-filter="auth" lay-skin="switch" lay-text="有|无" checked>
+		{{#  } else { }}
+			<input data-id="{{ d.id }}" type="checkbox"  value="1" name="teacherAuth" lay-filter="auth" lay-skin="switch" lay-text="有|无">
+		{{#  }}}
+	</script>
+	<!--审核状态-->
+	<script type="text/html" id="studentAuth">
+		{{#  if(d.studentAuth == "1"){ }}
+			<input data-id="{{ d.id }}" value="0" type="checkbox" name="studentAuth" lay-filter="auth" lay-skin="switch" lay-text="有|无" checked>
+		{{#  } else { }}
+			<input data-id="{{ d.id }}" value="1" type="checkbox" name="studentAuth" lay-filter="auth" lay-skin="switch" lay-text="有|无">
+		{{#  }}}
+	</script>
+</form>
+<script type="text/javascript" src="${s.base}/res/layui/layui.js"></script>
+<script type="text/javascript">
+layui.use(["form","layer","laydate","table","laytpl"],function(){
+    var form = layui.form,
+        layer = parent.layer === undefined ? layui.layer : top.layer,
+        $ = layui.jquery,
+        laytpl = layui.laytpl,
+        table = layui.table;
+
+    var tableIns = table.render({
+        elem: "#authList",
+        url : "/CMS/auth/list.html",
+        request: {
+        	pageName: "curr" 
+        	,limitName: "nums"
+        },
+        cellMinWidth : 95,
+        page : true,
+        height : "full-25",
+        limit : 15,
+        limits : [10,15,20,25],
+        id : "authList",
+        cols : [[
+            {field: "id", title: "ID", width:60, align:"center"},
+            {field: "name", title: "接口名称", minWidth:200},
+            {field: "url", title: "接口", width:250},
+            {field: "teacherAuth", title: "教师权限", align:"center", templet:"#teacherAuth" },
+            {field: "studentAuth", title: "学生权限", align:"center", templet:"#studentAuth"}
+        ]]
+    });
+    
+    
+    form.on("switch(auth)", function(data){
+        var index = layer.msg("修改中，请稍候",{icon: 16,time:false,shade:0.8});
+        $.ajax({
+       		type: "post",
+       		data: {
+       			id: $(data.elem).attr("data-id"),
+       			type: $(data.elem).attr("name"),
+       			val: data.elem.value
+       		},
+       		url: "/CMS/auth/setting.html",
+       		timeout:2000,
+       		success:function(res) {
+               	if (res == true) {
+               		tableIns.reload();
+               	} else {
+               		layer.msg(res, {icon: 5,time:1000});
+               		return false;
+               	}
+               	layer.close(index);
+       		},
+       		error:function() {
+       			layer.msg("操作失败！", {icon: 5,time:1000});
+       			layer.close(index);
+       			return false;
+       		}
+        });
+    });
+    
+ });
+
+</script>
+</body>
+</html>

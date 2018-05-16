@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>学生成绩管理系统</title>
+	<link rel="stylesheet" href="${s.base}/res/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="${s.base}/res/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<form class="layui-form">
+	<blockquote class="layui-elem-quote quoteBox">
+		<form class="layui-form">
+			<div class="layui-inline" style="margin-left:40px">
+				<div class="layui-input-inline" >
+					<select id="searchType" class="searchType">
+						<option value="">全部</option>
+						<#list courseList as C >
+						<option value="${C.id}">${C.courseName}</option>
+						</#list>
+					</select>
+				</div>
+				<a class="layui-btn search_btn" data-type="reload">确定</a>
+			</div>
+			
+			<div class="layui-inline" style="margin-left:40px">
+				<a id="update_list_btn" class="layui-btn ">批量提交成绩</a>
+			</div>
+			
+			<div class="layui-inline" style="margin-left:40px">
+				<a id="upload_btn" class="layui-btn ">导出</a>
+			</div>
+			
+		</form>
+	</blockquote>
+	
+	<table id="studentList" lay-filter="studentList"></table>
+	<!--操作-->
+	<script type="text/html" id="studentListBar">
+		<a class="layui-btn layui-btn-xs" lay-event="edit">提交成绩</a>
+	</script>
+</form>
+<script type="text/javascript" src="${s.base}/res/layui/layui.js"></script>
+<script type="text/javascript">
+layui.use(['form','layer','table','laytpl','upload'],function(){
+    var form = layui.form,
+    	laytpl = layui.laytpl,
+        layer = parent.layer === undefined ? layui.layer : top.layer,
+        $ = layui.jquery,
+        table = layui.table;
+
+    //学生列表
+    var tableIns = table.render({
+        elem: "#studentList",
+        url : "/CMS/student/stulist.html",
+        request: {
+        	pageName: 'curr'
+        	,limitName: 'nums'
+        },
+        where: {
+            cId: $("#searchType").val()
+        },
+        cellMinWidth : 95,
+        page : true,
+        height : "full-125",
+        limits : [10,15,20,25],
+        limit : 10,
+        loading : true,
+        id : "studentListTable",
+        cols : [[
+            {type: "checkbox", fixed:"left", width:50},
+            {field: "id", title: "学号", sort:true, minWidth:150, align:"center"},
+            {field: "name", title: "姓名",minWidth:120, align:"center"},
+            {field: "sex", title: "性别", minWidth:60, align:"center"},
+            {field: "grade", title: "班级", minWidth:150, align:"center"},
+            {field: "courseName", title: "课程名", minWidth:150, align:"center"},
+            {field: "score", title: "成绩", edit: "text", minWidth:150, align:"center"},
+            {field: "result", title: "结果", edit: "text", minWidth:150, align:"center"},
+            {title: "操作", width:100, templet:"#studentListBar",fixed:"right",align:"center"}
+        ]]
+    });
+    
+    //搜索
+    $(".search_btn").on("click",function(){
+       	tableIns.reload({
+             page: {  curr: 1  },
+             where: { cId: $("#searchType").val() }
+        });
+    });
+    
+    //列表操作
+    table.on("tool(studentList)", function(obj){
+        var data = obj.data;
+        
+       	$.ajax({
+       		type: "get",
+       		data: {
+       			id: data.id,
+       			score: data.score,
+       			result: data.result
+       		},
+       		url: "/CMS/score/update.html",
+       		success:function(res) {
+       			if (res == true) {
+   					tableIns.reload();
+   	                layer.close(index);
+   				}else {
+   					layer.msg(res, {icon: 5,time:1000});
+   				}
+       		}
+       	});
+    });
+    
+    //批量评分
+    $("#update_list_btn").click(function(){
+        var checkStatus = table.checkStatus('studentListTable'),
+            data = checkStatus.data,
+            scoreList = new Array();
+        if(data.length > 0) {
+            for (var i in data) {
+            	var score = new Object();
+	        	score.id = data[i].id;
+	        	score.score = data[i].score;
+	        	score.result = data[i].result;
+	        	scoreList[i] = score;
+            }
+            console.log(scoreList);
+            layer.confirm("确定提交？", {icon: 3, title: "提示信息"}, function (index) {
+            	$.ajax({
+            		type: "post",
+            		data: {
+            			scoreListStr : JSON.stringify(scoreList)
+            		},
+            		url: "/CMS/score/updateList.html",
+            		timeout:2000,
+            		success:function(res) {
+                    	if (res == true) {
+                    		tableIns.reload({
+                    			page: { curr: 1 }, 
+                    			where: { cId: $("#searchType").val() }
+                    		});
+                    	} else {
+                    		layer.msg(res, {icon: 5,time:1000});
+                    	}
+                    	layer.close(index);
+            		},
+            		error:function() {
+            			layer.msg("操作失败！", {icon: 5,time:1000});
+            			layer.close(index);
+            		}
+            	});
+            });
+        }else{
+            layer.msg("请选择要选择提交的行");
+        }
+    });
+    
+    
+});
+
+</script>
+
+</body>
+</html>

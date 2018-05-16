@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>教师</title>
+	<link rel="stylesheet" href="${s.base}/res/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="${s.base}/res/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<form class="layui-form">
+	<table id="courseList" lay-filter="courseList" ></table>
+	<!--操作-->
+	<script type="text/html" id="courseListBar">
+		<a class="layui-btn layui-btn-xs" lay-event="edit">结束课程</a>
+	</script>
+	
+</form>
+<script type="text/javascript" src="${s.base}/res/layui/layui.js"></script>
+<script type="text/javascript">
+layui.use(['layer','table'],function(){
+	var $ = $ = layui.jquery;
+    //courseList列表
+    tableIns = layui.table.render({
+        elem: "#courseList",
+        url : "/CMS/course/getMyCourse.html",
+        request: {
+        	pageName: "curr" //页码的参数名称
+        	,limitName: "nums" //每页数据量的参数名
+        },
+        cellMinWidth : 95,
+        page : true,
+        height : "full-25",
+        limits : [10,15,20,25],
+        limit : 10,
+        loading : true,
+        id : "courseListTable",
+        cols : [[
+            {field: "id", title: "课程编号", sort:true, width:100, align:"left"},
+            {field: "courseName", title: "课程名",minWidth:120, align:"left"},
+            {field: "teacherName", title: "任课教师",minWidth:120, align:"left"},
+            {field: "startDate", title: "开始时间", sort:true, minWidth:100, align:"center"},
+            {field: "endDate", title: "结束时间", minWidth:100, align:"center"},
+            {field: "classHour", title: "课时", minWidth:100, align:"center"},
+            {field: "testMode", title: "考核方式", minWidth:100, align:"center"},
+            {field: "studentNum", title: "最大人数", minWidth:100, align:"center"},
+            {field: "choiceNum", title: "已选（人）", minWidth:100, align:"center"},
+        	{title: "操作", width:100, templet:"#courseListBar",fixed:"right",align:"center"}
+        ]]
+    });
+    
+    
+     //列表操作
+    layui.table.on("tool(courseList)", function(obj){
+        layer.confirm('请确保结束课程前已提交学生成绩！确定结束此课程？', {icon: 3, title: '提示信息'}, function (index) {
+	        var data = obj.data;
+	       	$.ajax({
+	       		type: "get",
+	       		data: { id: data.id },
+	       		url: "/CMS/course/complete.html",
+	       		success:function(res) {
+	       			if (res == true) {
+	   					tableIns.reload();
+	   	                layer.close(index);
+	   				}else {
+	   					layer.msg(res, {icon: 5,time:1000});
+	   				}
+	       		}
+	       	});
+	     });
+    });
+});
+</script>
+</body>
+</html>

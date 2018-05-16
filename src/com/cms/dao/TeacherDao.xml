@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.dao.TeacherDao">
+  <resultMap id="BaseResultMapTeacher" type="com.cms.entity.Teacher">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, password, name, synopsis
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMapTeacher">
+    select 
+    <include refid="Base_Column_List" />
+    from t_teacher
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getTeacherForSelect" resultMap="BaseResultMapTeacher">
+  	select id,name from t_teacher 
+  	<where>
+  		<if test="_parameter != null and _parameter != ''">
+    		name like CONCAT ('%',#{searchKey},'%')
+  		</if>
+  	</where>
+  	limit 0, 10
+  </select>
+  <select id="getTeacher" resultMap="BaseResultMapTeacher">
+  	select
+  	<include refid="Base_Column_List" />
+  	from t_teacher
+  	<where>
+  		<if test="param2 != null and param2 != ''">
+	        (id like CONCAT ('%',#{param2},'%') )
+    		or (name like CONCAT ('%',#{param2},'%') )
+  		</if>
+  	</where>
+  	<if test="param1 != null">
+  		limit #{param1.start}, #{param1.pageSize}
+  	</if>
+  </select>
+  
+  <select id="selectTeacher" resultType="Teacher">
+  	select <include refid="Base_Column_List" />
+  	from t_teacher where  id = #{id,jdbcType=VARCHAR}
+  	and password = #{password,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getTotalItemsCount" resultType="Integer">
+  	select count(*)
+    from t_teacher
+    <where>
+    	<if test="_parameter != null and _parameter != ''">
+  			(id like CONCAT ('%',#{searchKey},'%') )
+    		or (name like CONCAT ('%',#{searchKey},'%') )
+    	</if>
+    </where>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_teacher
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  
+  <delete id="deleteInList" >
+  	delete from t_teacher where id in
+  		<foreach collection="list" item="id" separator="," open="(" close=")">
+  			#{id}
+  		</foreach>
+  </delete>
+  
+  <insert id="insert" parameterType="com.cms.entity.Teacher">
+    insert into t_teacher (id, password, name, synopsis
+      )
+    values (#{id,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}
+    	, #{synopsis,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <insert id="insertBatch" parameterType="java.util.List">
+  	insert into t_teacher (id, password, name, synopsis
+      ) values 
+      <foreach collection="list" item="item" separator="," >
+  		(#{item.id}, #{item.password}, #{item.name}, #{item.synopsis})
+  	  </foreach>
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.cms.entity.Teacher">
+    insert into t_teacher
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="synopsis != null">
+        synopsis,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="synopsis != null">
+        #{synopsis,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cms.entity.Teacher">
+    update t_teacher
+    <set>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="synopsis != null">
+      	synopsis = #{synopsis,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cms.entity.Teacher">
+    update t_teacher
+    set password = #{password,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR}, synopsis = #{synopsis,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
