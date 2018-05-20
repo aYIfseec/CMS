@@ -4,11 +4,6 @@
 
 <mapper namespace="com.cms.dao.AdminDao">
 	
-	<select id="getAllAdmin" resultType="Admin">
-		select * from t_admin where 1=1
-	</select>
-	
-	<!-- 查询所有admin -->
 	<select id="select" resultType="Admin">
 		select * from t_admin where username = #{username,jdbcType=VARCHAR} 
 		and password = #{password,jdbcType=VARCHAR}

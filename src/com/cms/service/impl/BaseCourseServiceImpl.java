@@ -11,10 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cms.dao.BaseCourseDao;
 import com.cms.entity.BaseCourse;
-import com.cms.entity.Teacher;
 import com.cms.service.BaseCourseService;
 import com.cms.utils.ExcelUtil;
-import com.cms.utils.MD5Util;
 import com.cms.utils.page.Pagination;
 
 @Service

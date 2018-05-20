@@ -3,7 +3,6 @@ package com.cms.service;
 import java.util.List;
 
 import com.cms.entity.Course;
-import com.cms.entity.Student;
 import com.cms.utils.page.Pagination;
 
 public interface CourseService {

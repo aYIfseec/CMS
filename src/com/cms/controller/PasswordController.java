@@ -9,14 +9,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cms.entity.Admin;
-import com.cms.entity.Auth;
 import com.cms.entity.Student;
 import com.cms.entity.Teacher;
 import com.cms.entity.User;
 import com.cms.service.AdminService;
 import com.cms.service.StudentService;
 import com.cms.service.TeacherService;
-import com.cms.utils.MD5Util;
 import com.cms.utils.StrUtil;
 
 @Controller
@@ -41,13 +39,14 @@ public class PasswordController {
 	@RequestMapping(value="/setting")
 	public String setting(HttpSession session, String oldPswd, String newPswd) {
 		oldPswd = oldPswd.toUpperCase();
-		newPswd = oldPswd.toUpperCase();
+		newPswd = newPswd.toUpperCase();
 		User user = (User) session.getAttribute(StrUtil.USER);
 		int res = 0;
 		if (StrUtil.ADMIN.equals(user.getUserType())) {
 			Admin admin = (Admin)user;
 			if(admin.getPassword().equals(oldPswd)) {
 				admin.setPassword(newPswd);
+				session.setAttribute(StrUtil.USER, admin);
 				res = adminService.update(admin);
 				if (res > 0) return StrUtil.RESULT_TRUE;
 			} else {

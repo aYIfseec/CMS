@@ -2,15 +2,12 @@ package com.cms.service.impl;
 
 import java.util.List;
 
-import javax.ejb.TransactionManagement;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cms.dao.CourseDao;
 import com.cms.entity.Course;
-import com.cms.entity.Student;
 import com.cms.service.CourseService;
 import com.cms.utils.page.Pagination;
 

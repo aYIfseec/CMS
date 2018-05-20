@@ -31,9 +31,6 @@ import com.cms.service.AuthService;
 import com.cms.service.Login;
 import com.cms.service.StudentService;
 import com.cms.service.TeacherService;
-import com.cms.service.impl.AdminServiceImpl;
-import com.cms.service.impl.StudentServiceImpl;
-import com.cms.service.impl.TeacherServiceImpl;
 import com.cms.utils.StrUtil;
 
 @Controller

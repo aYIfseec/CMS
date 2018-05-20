@@ -2,7 +2,6 @@ package com.cms.dao;
 
 import java.util.List;
 
-import com.cms.entity.Student;
 import com.cms.entity.Teacher;
 import com.cms.utils.page.Pagination;
 
